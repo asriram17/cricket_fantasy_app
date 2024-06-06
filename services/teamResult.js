@@ -8,7 +8,7 @@ async function teamResult(teams)
         let team2=0;
         let teampoints=new Map();
         
-        for(let [index,teamresult] of teams.entries())
+        for(let teamresult of teams)
         {
           let keys=Object.keys(teamresult);
           const tempteam1=teamresult[keys[1]][0].team;
@@ -56,7 +56,7 @@ async function teamResult(teams)
           }
         }
         let maxPoints = [];
-        let maxValue = -Infinity;
+        let maxValue = 0;
 
         for (const [teampoint, value] of teampoints) {
             if (value > maxValue) {

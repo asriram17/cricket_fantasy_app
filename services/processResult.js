@@ -29,12 +29,14 @@ function processResult(req)
     for(let [index,key] of allplayersArray.entries())
     {
         //batting
+        let keys = key.batter;
+        let playersbonusPoints = playersbonus[keys]?.bonus || 0;
         if(key.batsman_run > 0)
         {
-        let keys = key.batter;
+        
         let val = key.batsman_run * battingpoints.get('Run');
         let currentPlayerPoints = playerspoints[keys]?.bonus || 0;
-        let playersbonusPoints = playersbonus[keys]?.bonus || 0;
+        
         
         playerspoints = { ...playerspoints, [key.batter]: {"bonus":currentPlayerPoints + val, "team":key.BattingTeam} };
         
@@ -88,8 +90,12 @@ function processResult(req)
         let bonusPoints=0;
         let fieldbonus=0;
 
-        if (key.isWicketDelivery === 1) 
+        if (key.isWicketDelivery === 1) //playerspoints playersbonus
         {
+            if(!playersbonus[key.batter])
+            {
+                playersbonus={...playersbonus,[key.batter]:{"bonus":(playersbonusPoints || 0)- 2, "team":key.BattingTeam}};
+            }
         let prevpoints = Fielders[key.fielders_involved] || 0;
         
         Fielders = (key.fielders_involved !== 'NA')?{ ...Fielders, [key.fielders_involved]: prevpoints + 1 }:{ ...Fielders};
@@ -132,6 +138,7 @@ function processResult(req)
     let mergedBonus = {};
 
 // merge object
+    console.log('before merge playersbonus ',playersbonus);
     [bowlersbonus, maidenbonus, fieldingbonus, playerspoints, playersbonus].forEach((obj) => {
         Object.entries(obj).forEach(([key, value]) => {
             if (mergedBonus.hasOwnProperty(key)) {

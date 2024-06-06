@@ -1,3 +1,30 @@
+function checkTeamComposition(team) {
+    // console.log('in function ',team);
+    const roles = ['ar', 'batter', 'bowler', 'wk'];
+    const composition = {
+        isValid: true,
+        invalidRoles: [],
+        totalPlayers: 0,
+        roles: {} 
+    };
+
+    for (const role of roles) {
+        const playerCount = team[role];
+        composition.roles[role] = playerCount;
+
+        if (playerCount <= 0) {
+            composition.isValid = false;
+            composition.invalidRoles.push(`${role} should have at least 1 player`);
+        } else if (playerCount > 8) {
+            composition.isValid = false;
+            composition.invalidRoles.push(`${role} should not have more than 8 players`);
+        }
+
+    }
+
+
+  return composition;
+}
 
 function addTeam(req,players){
     let {TeamA,TeamB} =req.body;
@@ -27,30 +54,9 @@ function addTeam(req,players){
                   teams[currentteamkey] = (keys.Role === "BATTER") ? { ...teams[currentteamkey], batter: teams[currentteamkey].batter + 1 } : (keys.Role === "BOWLER") ? { ...teams[currentteamkey], bowler: teams[currentteamkey].bowler + 1 } : (keys.Role === "ALL-ROUNDER") ? { ...teams[currentteamkey], ar: teams[currentteamkey].ar + 1 } :(keys.Role === "WICKETKEEPER") ? { ...teams[currentteamkey], wk: teams[currentteamkey].wk + 1 }:null;
               }
           }
-          function checkTeamComposition(team) {
-            const roles = ['ar', 'batter', 'bowler', 'wk'];
-            const composition = {
-                isValid: true,
-                invalidRoles: [],
-                totalPlayers: 0
-            };
-            for (const role of roles) {
-              if (team[role] <= 0) {
-                  composition.isValid = false;
-                  composition.invalidRoles.push(role);
-              }
-              composition.totalPlayers += team[role];
-          }
-      
-          if (composition.totalPlayers > 8) {
-              composition.isValid = false;
-              composition.invalidRoles.push('Total players exceed 8');
-          }
-      
-          return composition;
-        }
+          
           if (index === players.length - 1) {
-
+            console.log('teams ',teams);
             const team1Composition = checkTeamComposition(teams[team1]);
             const team2Composition = checkTeamComposition(teams[team2]);
 
@@ -63,6 +69,10 @@ function addTeam(req,players){
                     return(`Team 2 has invalid roles: ${team2Composition.invalidRoles.join(', ')}`);
                 }
             } else {
+                teams[team1].captain=TeamA.captain;
+                teams[team1].vicecaptain=TeamA.vicecaptain;
+                teams[team2].captain=TeamB.captain;
+                teams[team2].vicecaptain=TeamB.vicecaptain;
                 return(teams);
             }
             
