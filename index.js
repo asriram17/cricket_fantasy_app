@@ -57,13 +57,8 @@ return schema.validate(team);
             return result.value.value;
           }
           const match = await getAndIncrementMatchNo(db, 'currentMatchNo');
-          // const match=db.collection('currentMatchNo');
-          // const currentmatch=await match.find().toArray();
-          // console.log('currentmatch ',currentmatch[0].value);
-          // console.log(req.body.captain)
           const collection = db.collection(`add-team`);
           await collection.insertOne({ [`match ${match}`]: {teams: result}}); 
-          // await collection.insertOne({ [`match ${currentmatch[0].value}`]: {teams: result}}); 
           console.log('Data inserted successfully');
         } catch (error) {
         console.error('Error occurred:', error);
@@ -73,18 +68,12 @@ return schema.validate(team);
       });
       
       app.post('/process-result', async (req, res) => {
-
-        // Not using dynamically
-        // const match=await db.collection('match');
-        // const allplayers= await match.find().toArray();
-        // const result=processresult(req,allplayers);
-
+        //to sync with current match
         const current=db.collection('currentMatchNo');
-        const currentmatch=await current.find().toArray(); //currentmatch[0].value
+        const currentmatch=await current.find().toArray();
         let val= currentmatch[0].value;
-        console.log(val);
         const addTeam=db.collection('add-team');
-        const getaddteam=await addTeam.find().toArray(); //
+        const getaddteam=await addTeam.find().toArray();
         const [team1,team2]=Object.keys(getaddteam[getaddteam.length-1][`match ${val}`].teams);
         const {[team1]:{captain:captain1,vicecaptain:vicecaptain1},[team2]:{captain:captain2,vicecaptain:vicecaptain2}}=getaddteam[getaddteam.length-1][`match ${val}`].teams;
         let captain=[captain1,captain2];
@@ -100,21 +89,8 @@ return schema.validate(team);
             key.bonus*=1.5;
           }
         }
-        console.log(teamResult);
     
         try {
-          // async function getAndIncrementMatchNo(db, CollectionName) {
-          //   const Collection = db.collection(CollectionName);
-        
-          //   const result = await Collection.findOneAndUpdate(
-          //       { _id: 'currentMatchNo' },
-          //       { $inc: { value: 1 } },
-          //       { returnDocument: 'after', upsert: true }
-          //   );
-        
-          //   return result.value.value;
-          // }
-          // const match = await getAndIncrementMatchNo(db, 'currentMatchNo');
           const collection = db.collection(`process-result`);
           await collection.insertOne({ [`match ${val}`]: teamResult }); 
           console.log('Data inserted successfully');
